@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Footprint</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="appliance.html">Appliance Footprint</a>
+        </nav>
+        <h1>Vehicle Footprint</h1>
+        <form id="vehicle-form">
+            <div class="form-group">
+                <label for="num-vehicles">Number of Vehicles</label>
+                <input type="number" id="num-vehicles" name="num-vehicles" min="1" value="1">
+            </div>
+            <div class="form-group">
+                <label for="calc-mode">Select Calculation Mode</label>
+                <select id="calc-mode" name="calc-mode">
+                    <option value="daily">Daily</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+            <div id="vehicle-details"></div>
+            <button type="button" class="button" onclick="addVehicleInputs()">Add Vehicles</button>
+            <button type="button" class="button" onclick="calculateVehicleEmission()">Calculate Vehicle Emission</button>
+        </form>
+        <div id="vehicle-results" class="results"></div>
+    </div>
+
+    <script>
+        const transportModes = {
+            "Car (Petrol)": 0.24,
+            "Car (Diesel)": 0.27,
+            "Bus": 0.05,
+            "Train": 0.04,
+            "Bicycle": 0.0,
+            "Walking": 0.0,
+            "Electric Car": 0.12,
+        };
+
+        const calcMode = document.getElementById("calc-mode");
+
+        calcMode.addEventListener("change", addVehicleInputs);
+
+        function addVehicleInputs() {
+            const numVehicles = parseInt(document.getElementById('num-vehicles').value) || 1;
+            const vehicleDetails = document.getElementById('vehicle-details');
+            const calcModeValue = calcMode.value;
+            vehicleDetails.innerHTML = '';
+
+            for (let i = 0; i < numVehicles; i++) {
+                vehicleDetails.innerHTML += `
+                    <div class="form-group">
+                        <h3>Vehicle ${i + 1}</h3>
+                        <label for="vehicle-${i}-mode">Mode of Transport</label>
+                        <select id="vehicle-${i}-mode">
+                            ${Object.keys(transportModes).map(mode => `<option value="${mode}">${mode}</option>`).join('')}
+                        </select>
+                        <label for="vehicle-${i}-distance">Daily Distance (km)</label>
+                        <input type="number" id="vehicle-${i}-distance" min="0" step="0.1">
+                        ${calcModeValue === "custom" ? `
+                            <label for="vehicle-${i}-days">Custom Days</label>
+                            <input type="number" id="vehicle-${i}-days" min="1" value="1">
+                        ` : ''}
+                    </div>`;
+            }
+        }
+
+        function calculateVehicleEmission() {
+            const numVehicles = parseInt(document.getElementById('num-vehicles').value) || 1;
+            const calcModeValue = calcMode.value;
+            const vehicleResults = document.getElementById('vehicle-results');
+            vehicleResults.innerHTML = '';
+            let totalEmission = 0;
+            let multiplier;
+
+            for (let i = 0; i < numVehicles; i++) {
+                const mode = document.getElementById(`vehicle-${i}-mode`).value;
+                const distance = parseFloat(document.getElementById(`vehicle-${i}-distance`).value) || 0;
+                multiplier = calcModeValue === "custom"
+                    ? parseInt(document.getElementById(`vehicle-${i}-days`).value) || 1
+                    : calcModeValue === "daily" ? 1
+                    : calcModeValue === "monthly" ? 30
+                    : 365;
+
+                const emission = distance * transportModes[mode] * multiplier;
+                totalEmission += emission;
+
+                vehicleResults.innerHTML += `<p><strong>Vehicle ${i + 1} (${calcModeValue}):</strong> ${emission.toFixed(2)} kg CO₂</p>`;
+            }
+
+            vehicleResults.innerHTML += `<hr><p><strong>Total Vehicle Emission (${calcModeValue}):</strong> ${totalEmission.toFixed(2)} kg CO₂</p>`;
+        }
+    </script>
+</body>
+</html>
