@@ -42,6 +42,7 @@
             <button type="button" class="button clear-btn" onclick="resetForm()">Clear</button>
         </form>
         <div id="appliance-results" class="results"></div>
+        <div id="feedback-message"></div>
     </div>
 
     <script>
@@ -50,6 +51,12 @@
             "India": 0.92,
             "EU Average": 0.23,
             "Australia": 0.82
+        };
+
+        const globalThresholds = {
+            "daily": 2.74,
+            "monthly": 82.2,
+            "yearly": 1000
         };
 
         const calcMode = document.getElementById("calc-mode");
@@ -92,9 +99,12 @@
             const region = regionSelect.value;
             const emissionFactor = regionEmissionFactor[region];
             const applianceResults = document.getElementById('appliance-results');
-            
+            const feedbackMessage = document.getElementById('feedback-message');
+
             applianceResults.innerHTML = '';
+            feedbackMessage.innerHTML = '';
             let totalEmission = 0;
+            let threshold = globalThresholds[calcModeValue];
 
             for (let i = 0; i < numAppliances; i++) {
                 const name = document.getElementById(`appliance-${i}-name`).value || `Appliance ${i + 1}`;
@@ -112,13 +122,25 @@
                 applianceResults.innerHTML += `<p><strong>${name} (${calcModeValue}):</strong> ${emission.toFixed(2)} kg CO₂</p>`;
             }
 
+            if (calcModeValue === "custom") {
+                const customDays = parseInt(document.getElementById(`appliance-0-days`)?.value) || 1;
+                threshold = globalThresholds["daily"] * customDays;
+            }
+
             applianceResults.innerHTML += `<hr><p><strong>Total Emission (${calcModeValue}):</strong> ${totalEmission.toFixed(2)} kg CO₂</p>`;
+
+            if (totalEmission <= threshold) {
+                feedbackMessage.innerHTML = `<p class="feedback low-emission">✅ Your ${calcModeValue} carbon footprint is within the recommended limit. Keep it up! 🌱</p>`;
+            } else {
+                feedbackMessage.innerHTML = `<p class="feedback high-emission">⚠️ Your ${calcModeValue} carbon footprint is above the recommended limit. Consider using energy-efficient appliances. ♻️</p>`;
+            }
         }
 
         function resetForm() {
             document.getElementById('appliance-form').reset();
             document.getElementById('appliance-details').innerHTML = '';
             document.getElementById('appliance-results').innerHTML = '';
+            document.getElementById('feedback-message').innerHTML = '';
         }
     </script>
 </body>
