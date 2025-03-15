@@ -30,6 +30,7 @@
             <div id="vehicle-details"></div>
             <button type="button" class="button" onclick="addVehicleInputs()">Add Vehicles</button>
             <button type="button" class="button" onclick="calculateVehicleEmission()">Calculate Vehicle Emission</button>
+            <button type="button" class="button" onclick="clearForm()">Clear Form</button>
         </form>
         <div id="vehicle-results" class="results"></div>
         <div id="feedback" class="feedback"></div>
@@ -148,6 +149,14 @@
                 alert("Response submitted successfully!");
                 document.getElementById('change-response').value = "";
             }).catch(error => console.error('Error:', error));
+        }
+
+        function clearForm() {
+            document.getElementById("vehicle-form").reset();
+            document.getElementById("vehicle-details").innerHTML = ""; // Clear dynamically added vehicle inputs
+            document.getElementById("vehicle-results").innerHTML = ""; // Clear results
+            document.getElementById("feedback").innerHTML = ""; // Clear feedback
+            document.getElementById("change-section").style.display = "none"; // Hide change section
         }
     </script>
 </body>
