@@ -98,22 +98,45 @@
             }
         }
 
-        document.querySelectorAll("input[name='change-option']").forEach(option => {
-            option.addEventListener("change", function() {
-                document.getElementById("submit-change").style.display = "block";
-            });
-        });
+        function showChangeOptions() {
+    const emissionMessage = document.getElementById('emission-message');
+    
+    // Add radio button options
+    emissionMessage.innerHTML += `
+        <p><strong>How would you like to change?</strong></p>
+        <label><input type="radio" name="change-option" value="Public Transport"> Switch to Public Transport</label><br>
+        <label><input type="radio" name="change-option" value="Carpooling"> Carpool with others</label><br>
+        <label><input type="radio" name="change-option" value="Electric Vehicle"> Switch to an Electric Vehicle</label><br>
+        <label><input type="radio" name="change-option" value="Bicycling"> Use a Bicycle</label><br>
+        <label><input type="radio" name="change-option" value="Walking"> Walk more often</label><br>
+        <button id="submit-change" style="display:none;" onclick="submitChange()">Submit</button>
+    `;
 
-        function submitChange() {
-            const selectedOption = document.querySelector("input[name='change-option']:checked").value;
-            fetch("submit_change.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ change: selectedOption })
-            }).then(response => response.text()).then(data => {
-                alert("Your preference has been saved: " + selectedOption);
-            }).catch(error => console.error("Error:", error));
-        }
+    // Show the submit button only when a radio button is selected
+    document.querySelectorAll('input[name="change-option"]').forEach(option => {
+        option.addEventListener('change', function() {
+            document.getElementById('submit-change').style.display = "block";
+        });
+    });
+}
+
+function submitChange() {
+    const selectedOption = document.querySelector('input[name="change-option"]:checked').value;
+
+    // Send the data to the database (submit_change.php)
+    fetch('submit_change.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `change_option=${encodeURIComponent(selectedOption)}`
+    })
+    .then(response => response.text())
+    .then(data => {
+        alert("Your choice has been submitted: " + selectedOption);
+    })
+    .catch(error => {
+        console.error("Error submitting choice:", error);
+    });
+}
     </script>
 </body>
 </html>
