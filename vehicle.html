@@ -33,14 +33,12 @@
         </form>
         <div id="vehicle-results" class="results"></div>
         <div id="feedback" class="feedback"></div>
-
-        <div class="change-section">
+        <div id="change-section" class="change-section" style="display: none;">
             <h2>What will you do to change?</h2>
             <textarea id="change-response" rows="4" cols="50" placeholder="Enter your response..."></textarea>
-            <button type="button" onclick="submitResponse()">Submit</button>
+            <button type="button" class="button" onclick="submitResponse()">Submit</button>
         </div>
     </div>
-
     <script>
         const transportModes = {
             "Car (Petrol)": 0.24,
@@ -91,8 +89,10 @@
             const calcModeValue = calcMode.value;
             const vehicleResults = document.getElementById('vehicle-results');
             const feedback = document.getElementById('feedback');
+            const changeSection = document.getElementById('change-section');
             vehicleResults.innerHTML = '';
             feedback.innerHTML = '';
+            changeSection.style.display = 'none';
             let totalEmission = 0;
             let multiplier;
 
@@ -118,6 +118,7 @@
                 feedback.innerHTML = `<p style="color: green; font-weight: bold;">✅ Great job! Your emissions are within the recommended range for ${calcModeValue} calculations.</p>`;
             } else {
                 feedback.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ Warning! Your emissions exceed the recommended limit for ${calcModeValue}. Consider reducing your vehicle usage or switching to eco-friendly transport.</p>`;
+                changeSection.style.display = 'block';
             }
         }
 
