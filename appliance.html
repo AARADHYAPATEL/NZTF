@@ -129,10 +129,12 @@
 
             applianceResults.innerHTML += `<hr><p><strong>Total Emission (${calcModeValue}):</strong> ${totalEmission.toFixed(2)} kg CO₂</p>`;
 
-            if (totalEmission <= threshold) {
-                feedbackMessage.innerHTML = `<p style="color: green; font-weight: bold;">✅ Your ${calcModeValue} carbon footprint is within the recommended limit. Keep it up! 🌱</p>`;
+            const limit = emissionLimits[calcModeValue] || emissionLimits["custom"];
+            if (totalEmission <= limit) {
+                feedback.innerHTML = `<p style="color: green; font-weight: bold;">✅ Great job! Your emissions are within the recommended range for ${calcModeValue} calculations.</p>`;
             } else {
-                feedbackMessage.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ Your ${calcModeValue} carbon footprint is above the recommended limit. Consider using energy-efficient appliances. ♻️</p>`;
+                feedback.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ Warning! Your emissions exceed the recommended limit for ${calcModeValue}. Consider reducing your vehicle usage or switching to eco-friendly transport.</p>`;
+                changeSection.style.display = 'block';
             }
         }
 
