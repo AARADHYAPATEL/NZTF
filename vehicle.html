@@ -30,6 +30,7 @@
             <div id="vehicle-details"></div>
             <button type="button" class="button" onclick="addVehicleInputs()">Add Vehicles</button>
             <button type="button" class="button" onclick="calculateVehicleEmission()">Calculate Vehicle Emission</button>
+            <button type="submit" class="button">Submit</button>
         </form>
         <div id="vehicle-results" class="results"></div>
         <div id="emission-message" class="message"></div>
@@ -118,6 +119,17 @@
                 `;
             }
         }
+
+        document.getElementById('vehicle-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            fetch('submit.php', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.text())
+              .then(data => alert('Data submitted successfully!'))
+              .catch(error => alert('Submission failed.')); 
+        });
     </script>
 </body>
 </html>
