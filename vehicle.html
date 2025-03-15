@@ -33,6 +33,14 @@
         </form>
         <div id="vehicle-results" class="results"></div>
         <div id="emission-message" class="message"></div>
+        <div id="change-options" class="change-options" style="display: none;">
+            <h3>How would you like to change?</h3>
+            <label><input type="radio" name="change-option" value="public-transport"> Use Public Transport</label><br>
+            <label><input type="radio" name="change-option" value="cycling"> Start Cycling</label><br>
+            <label><input type="radio" name="change-option" value="walking"> Walk More</label><br>
+            <label><input type="radio" name="change-option" value="electric-car"> Switch to an Electric Car</label><br>
+            <button id="submit-change" style="display: none;" onclick="submitChange()">Submit</button>
+        </div>
     </div>
 
     <script>
@@ -47,15 +55,12 @@
         };
 
         const calcMode = document.getElementById("calc-mode");
-
         calcMode.addEventListener("change", addVehicleInputs);
 
         function addVehicleInputs() {
             const numVehicles = parseInt(document.getElementById('num-vehicles').value) || 1;
             const vehicleDetails = document.getElementById('vehicle-details');
-            const calcModeValue = calcMode.value;
             vehicleDetails.innerHTML = '';
-
             for (let i = 0; i < numVehicles; i++) {
                 vehicleDetails.innerHTML += `
                     <div class="form-group">
@@ -66,46 +71,48 @@
                         </select>
                         <label for="vehicle-${i}-distance">Daily Distance (km)</label>
                         <input type="number" id="vehicle-${i}-distance" min="0" step="0.1">
-                        ${calcModeValue === "custom" ? `
-                            <label for="vehicle-${i}-days">Custom Days</label>
-                            <input type="number" id="vehicle-${i}-days" min="1" value="1">
-                        ` : ''}
                     </div>`;
             }
         }
 
         function calculateVehicleEmission() {
             const numVehicles = parseInt(document.getElementById('num-vehicles').value) || 1;
-            const calcModeValue = calcMode.value;
             const vehicleResults = document.getElementById('vehicle-results');
             const emissionMessage = document.getElementById('emission-message');
+            const changeOptions = document.getElementById('change-options');
             vehicleResults.innerHTML = '';
             emissionMessage.innerHTML = '';
+            changeOptions.style.display = 'none';
             let totalEmission = 0;
-            let multiplier;
-
             for (let i = 0; i < numVehicles; i++) {
                 const mode = document.getElementById(`vehicle-${i}-mode`).value;
                 const distance = parseFloat(document.getElementById(`vehicle-${i}-distance`).value) || 0;
-                multiplier = calcModeValue === "custom"
-                    ? parseInt(document.getElementById(`vehicle-${i}-days`).value) || 1
-                    : calcModeValue === "daily" ? 1
-                    : calcModeValue === "monthly" ? 30
-                    : 365;
-
-                const emission = distance * transportModes[mode] * multiplier;
+                const emission = distance * transportModes[mode] * 30; // Monthly assumption
                 totalEmission += emission;
-
-                vehicleResults.innerHTML += `<p><strong>Vehicle ${i + 1} (${calcModeValue}):</strong> ${emission.toFixed(2)} kg CO₂</p>`;
+                vehicleResults.innerHTML += `<p><strong>Vehicle ${i + 1}:</strong> ${emission.toFixed(2)} kg CO₂</p>`;
             }
-
-            vehicleResults.innerHTML += `<hr><p><strong>Total Vehicle Emission (${calcModeValue}):</strong> ${totalEmission.toFixed(2)} kg CO₂</p>`;
-
-            if (totalEmission < 50) {
-                emissionMessage.innerHTML = "<p class='low-emission'>Great job! Your emissions are on the lower side.✅</p>";
-            } else {
-                emissionMessage.innerHTML = "<p class='high-emission'>⚠️Your emissions are quite high! Consider switching to eco-friendly transport options.⚠️</p>";
+            vehicleResults.innerHTML += `<hr><p><strong>Total Vehicle Emission:</strong> ${totalEmission.toFixed(2)} kg CO₂</p>`;
+            if (totalEmission > 50) {
+                emissionMessage.innerHTML = "<p class='high-emission'>⚠️ Your emissions are quite high! Consider switching to eco-friendly transport options. ⚠️</p>";
+                changeOptions.style.display = 'block';
             }
+        }
+
+        document.querySelectorAll("input[name='change-option']").forEach(option => {
+            option.addEventListener("change", function() {
+                document.getElementById("submit-change").style.display = "block";
+            });
+        });
+
+        function submitChange() {
+            const selectedOption = document.querySelector("input[name='change-option']:checked").value;
+            fetch("submit_change.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ change: selectedOption })
+            }).then(response => response.text()).then(data => {
+                alert("Your preference has been saved: " + selectedOption);
+            }).catch(error => console.error("Error:", error));
         }
     </script>
 </body>
