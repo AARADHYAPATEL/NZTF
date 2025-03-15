@@ -159,3 +159,12 @@
             }
 
         }
+
+       .clear-btn {
+           background: linear-gradient(135deg, #d9534f, #c9302c);
+       }
+
+       .clear-btn:hover {
+           background: linear-gradient(135deg, #c9302c, #b52b27);
+       }
+
