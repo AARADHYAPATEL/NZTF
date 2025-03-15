@@ -15,12 +15,21 @@
         <h1>Appliance Footprint</h1>
         <form id="appliance-form">
             <div class="form-group">
+                <label for="region">Select Your Region</label>
+                <select id="region">
+                    <option value="USA">USA</option>
+                    <option value="India">India</option>
+                    <option value="EU Average">EU Average</option>
+                    <option value="Australia">Australia</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="num-appliances">Number of Appliances</label>
                 <input type="number" id="num-appliances" name="num-appliances" min="1" value="1">
             </div>
             <div class="form-group">
                 <label for="calc-mode">Select Calculation Mode</label>
-                <select id="calc-mode" name="calc-mode">
+                <select id="calc-mode">
                     <option value="daily">Daily</option>
                     <option value="monthly">Monthly</option>
                     <option value="yearly">Yearly</option>
@@ -29,10 +38,12 @@
             </div>
             <div id="appliance-details"></div>
             <button type="button" class="button" onclick="addApplianceInputs()">Add Appliances</button>
-            <button type="button" class="button" onclick="calculateApplianceEmission()">Calculate Appliance Emission</button>
+            <button type="button" class="button" onclick="calculateApplianceEmission()">Calculate Emission</button>
+            <button type="button" class="button clear-btn" onclick="resetForm()">Clear</button>
         </form>
         <div id="appliance-results" class="results"></div>
     </div>
+
     <script>
         const regionEmissionFactor = {
             "USA": 0.43,
@@ -40,41 +51,48 @@
             "EU Average": 0.23,
             "Australia": 0.82
         };
-        const defaultRegion = "USA";
-        const emissionFactor = regionEmissionFactor[defaultRegion];
 
         const calcMode = document.getElementById("calc-mode");
+        const numAppliancesInput = document.getElementById("num-appliances");
+        const regionSelect = document.getElementById("region");
 
         calcMode.addEventListener("change", addApplianceInputs);
+        numAppliancesInput.addEventListener("input", addApplianceInputs);
 
         function addApplianceInputs() {
-            const numAppliances = parseInt(document.getElementById('num-appliances').value) || 1;
+            const numAppliances = parseInt(numAppliancesInput.value) || 1;
             const applianceDetails = document.getElementById('appliance-details');
             const calcModeValue = calcMode.value;
-            applianceDetails.innerHTML = '';
+            
+            applianceDetails.innerHTML = ''; // Clear previous inputs
 
             for (let i = 0; i < numAppliances; i++) {
-                applianceDetails.innerHTML += `
-                    <div class="form-group">
-                        <h3>Appliance ${i + 1}</h3>
-                        <label for="appliance-${i}-name">Appliance Name</label>
-                        <input type="text" id="appliance-${i}-name" placeholder="e.g., Refrigerator">
-                        <label for="appliance-${i}-power">Power Rating (Watts)</label>
-                        <input type="number" id="appliance-${i}-power" min="0" step="0.1" placeholder="e.g., 1000">
-                        <label for="appliance-${i}-hours">Daily Usage (Hours)</label>
-                        <input type="number" id="appliance-${i}-hours" min="0" step="0.1" placeholder="e.g., 5">
-                        ${calcModeValue === "custom" ? `
-                            <label for="appliance-${i}-days">Custom Days</label>
-                            <input type="number" id="appliance-${i}-days" min="1" value="1">
-                        ` : ''}
-                    </div>`;
+                const applianceDiv = document.createElement("div");
+                applianceDiv.classList.add("form-group");
+                applianceDiv.innerHTML = `
+                    <h3>Appliance ${i + 1}</h3>
+                    <label>Appliance Name</label>
+                    <input type="text" id="appliance-${i}-name" placeholder="e.g., Refrigerator">
+                    <label>Power Rating (Watts)</label>
+                    <input type="number" id="appliance-${i}-power" min="0" step="0.1" placeholder="e.g., 1000">
+                    <label>Daily Usage (Hours)</label>
+                    <input type="number" id="appliance-${i}-hours" min="0" step="0.1" placeholder="e.g., 5">
+                    ${calcModeValue === "custom" ? `
+                        <label>Custom Days</label>
+                        <input type="number" id="appliance-${i}-days" min="1" value="1">
+                    ` : ''}
+                `;
+                applianceDetails.appendChild(applianceDiv);
             }
         }
 
         function calculateApplianceEmission() {
-            const numAppliances = parseInt(document.getElementById('num-appliances').value) || 1;
+            const numAppliances = parseInt(numAppliancesInput.value) || 1;
             const calcModeValue = calcMode.value;
+            const region = regionSelect.value;
+            const emissionFactor = regionEmissionFactor[region];
             const applianceResults = document.getElementById('appliance-results');
+            
             applianceResults.innerHTML = '';
             let totalEmission = 0;
 
@@ -94,7 +112,13 @@
                 applianceResults.innerHTML += `<p><strong>${name} (${calcModeValue}):</strong> ${emission.toFixed(2)} kg CO₂</p>`;
             }
 
-            applianceResults.innerHTML += `<hr><p><strong>Total Appliance Emission (${calcModeValue}):</strong> ${totalEmission.toFixed(2)} kg CO₂</p>`;
+            applianceResults.innerHTML += `<hr><p><strong>Total Emission (${calcModeValue}):</strong> ${totalEmission.toFixed(2)} kg CO₂</p>`;
+        }
+
+        function resetForm() {
+            document.getElementById('appliance-form').reset();
+            document.getElementById('appliance-details').innerHTML = '';
+            document.getElementById('appliance-results').innerHTML = '';
         }
     </script>
 </body>
