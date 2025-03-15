@@ -42,7 +42,22 @@
             <button type="button" class="button clear-btn" onclick="resetForm()">Clear Form</button>
         </form>
         <div id="appliance-results" class="results"></div>
-        <div id="feedback-message"></div>
+        <div id="feedback" class="feedback"></div>
+        <div id="change-section" class="change-section" style="display: none;">
+            <h2>What will you do to change?</h2>
+            <select id="change-response">
+                <option value="">Select an option...</option>
+                <option value="Use energy-efficient appliances (e.g., Energy Star)">Use energy-efficient appliances (e.g., Energy Star)</option>
+                <option value="Unplug devices when not in use">Unplug devices when not in use</option>
+                <option value="Use LED lights instead of incandescent bulbs">Use LED lights instead of incandescent bulbs</option>
+                <option value="Set air conditioners to an optimal temperature">Set air conditioners to an optimal temperature</option>
+                <option value="Use cold water for laundry when possible">Use cold water for laundry when possible</option>
+                <option value="Reduce standby power consumption">Reduce standby power consumption</option>
+                <option value="Use solar-powered appliances when possible">Use solar-powered appliances when possible</option>
+                <option value="Opt for manual appliances over electric where feasible">Opt for manual appliances over electric where feasible</option>
+            </select>
+            <button type="button" class="button" onclick="submitResponse()">Submit</button>
+        </div>
     </div>
 
     <script>
