@@ -35,7 +35,14 @@
         <div id="feedback" class="feedback"></div>
         <div id="change-section" class="change-section" style="display: none;">
             <h2>What will you do to change?</h2>
-            <textarea id="change-response" rows="4" cols="50" placeholder="Enter your response..."></textarea>
+            <select id="change-response">
+                <option value="">Select an option...</option>
+                <option value="Use public transport more often">Use public transport more often</option>
+                <option value="Carpool with others">Carpool with others</option>
+                <option value="Use an electric vehicle">Use an electric vehicle</option>
+                <option value="Reduce unnecessary trips">Reduce unnecessary trips</option>
+                <option value="Walk or cycle when possible">Walk or cycle when possible</option>
+            </select>
             <button type="button" class="button" onclick="submitResponse()">Submit</button>
         </div>
     </div>
