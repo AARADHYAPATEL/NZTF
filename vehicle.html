@@ -138,13 +138,6 @@ function showChangeOptions() {
     // Append everything to the emission message div
     emissionMessage.appendChild(optionsDiv);
 
-    // Show the submit button only when a radio button is selected
-    document.querySelectorAll('input[name="change-option"]').forEach(option => {
-        option.addEventListener('change', function() {
-            document.getElementById('submit-change').style.display = "block";
-        });
-    });
-}
 
 function submitChange() {
     const selectedOption = document.querySelector('input[name="change-option"]:checked').value;
