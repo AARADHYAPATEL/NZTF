@@ -33,6 +33,12 @@
         </form>
         <div id="vehicle-results" class="results"></div>
         <div id="feedback" class="feedback"></div>
+
+        <div class="change-section">
+            <h2>What will you do to change?</h2>
+            <textarea id="change-response" rows="4" cols="50" placeholder="Enter your response..."></textarea>
+            <button type="button" onclick="submitResponse()">Submit</button>
+        </div>
     </div>
 
     <script>
@@ -50,7 +56,7 @@
             "daily": 10,
             "monthly": 300,
             "yearly": 3650,
-            "custom": 300 // Approximate safe threshold for custom usage
+            "custom": 300
         };
 
         const calcMode = document.getElementById("calc-mode");
@@ -107,13 +113,33 @@
 
             vehicleResults.innerHTML += `<hr><p><strong>Total Vehicle Emission (${calcModeValue}):</strong> ${totalEmission.toFixed(2)} kg CO₂</p>`;
             
-            // Feedback based on global recommendations
             const limit = emissionLimits[calcModeValue] || emissionLimits["custom"];
             if (totalEmission <= limit) {
                 feedback.innerHTML = `<p style="color: green; font-weight: bold;">✅ Great job! Your emissions are within the recommended range for ${calcModeValue} calculations.</p>`;
             } else {
                 feedback.innerHTML = `<p style="color: red; font-weight: bold;">⚠️ Warning! Your emissions exceed the recommended limit for ${calcModeValue}. Consider reducing your vehicle usage or switching to eco-friendly transport.</p>`;
             }
+        }
+
+        function submitResponse() {
+            const response = document.getElementById('change-response').value;
+            if (response.trim() === "") {
+                alert("Please enter a response before submitting.");
+                return;
+            }
+
+            const data = { response: response };
+
+            fetch('responses.json', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(() => {
+                alert("Response submitted successfully!");
+                document.getElementById('change-response').value = "";
+            }).catch(error => console.error('Error:', error));
         }
     </script>
 </body>
