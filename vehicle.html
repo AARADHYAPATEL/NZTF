@@ -33,6 +33,7 @@
         </form>
         <div id="vehicle-results" class="results"></div>
         <div id="emission-message" class="message"></div>
+        <div id="change-options" class="change-options"></div>
     </div>
 
     <script>
@@ -79,8 +80,10 @@
             const calcModeValue = calcMode.value;
             const vehicleResults = document.getElementById('vehicle-results');
             const emissionMessage = document.getElementById('emission-message');
+            const changeOptions = document.getElementById('change-options');
             vehicleResults.innerHTML = '';
             emissionMessage.innerHTML = '';
+            changeOptions.innerHTML = '';
             let totalEmission = 0;
             let multiplier;
 
@@ -105,6 +108,14 @@
                 emissionMessage.innerHTML = "<p class='low-emission'>Great job! Your emissions are on the lower side.✅</p>";
             } else {
                 emissionMessage.innerHTML = "<p class='high-emission'>⚠️Your emissions are quite high! Consider switching to eco-friendly transport options.⚠️</p>";
+                changeOptions.innerHTML = `
+                    <p>How would you wanna change?</p>
+                    <label><input type="radio" name="change-option" value="Public Transport"> Use Public Transport</label><br>
+                    <label><input type="radio" name="change-option" value="Carpool"> Carpool with Others</label><br>
+                    <label><input type="radio" name="change-option" value="Electric Vehicle"> Switch to an Electric Vehicle</label><br>
+                    <label><input type="radio" name="change-option" value="Bicycle"> Use a Bicycle for Short Distances</label><br>
+                    <label><input type="radio" name="change-option" value="Walking"> Walk More Often</label><br>
+                `;
             }
         }
     </script>
