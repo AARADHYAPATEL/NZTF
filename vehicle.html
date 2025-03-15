@@ -33,14 +33,6 @@
         </form>
         <div id="vehicle-results" class="results"></div>
         <div id="emission-message" class="message"></div>
-        <div id="change-options" class="change-options" style="display: none;">
-            <h3>How would you like to change?</h3>
-            <label><input type="radio" name="change-option" value="public-transport"> Use Public Transport</label><br>
-            <label><input type="radio" name="change-option" value="cycling"> Start Cycling</label><br>
-            <label><input type="radio" name="change-option" value="walking"> Walk More</label><br>
-            <label><input type="radio" name="change-option" value="electric-car"> Switch to an Electric Car</label><br>
-            <button type="button" class="button" onclick="submitChange()">Submit</button>
-        </div>
     </div>
 
     <script>
@@ -55,108 +47,66 @@
         };
 
         const calcMode = document.getElementById("calc-mode");
+
         calcMode.addEventListener("change", addVehicleInputs);
 
         function addVehicleInputs() {
             const numVehicles = parseInt(document.getElementById('num-vehicles').value) || 1;
             const vehicleDetails = document.getElementById('vehicle-details');
+            const calcModeValue = calcMode.value;
             vehicleDetails.innerHTML = '';
+
             for (let i = 0; i < numVehicles; i++) {
-                vehicleDetails.innerHTML += `
+                vehicleDetails.innerHTML += 
                     <div class="form-group">
                         <h3>Vehicle ${i + 1}</h3>
                         <label for="vehicle-${i}-mode">Mode of Transport</label>
                         <select id="vehicle-${i}-mode">
-                            ${Object.keys(transportModes).map(mode => `<option value="${mode}">${mode}</option>`).join('')}
+                            ${Object.keys(transportModes).map(mode => <option value="${mode}">${mode}</option>).join('')}
                         </select>
                         <label for="vehicle-${i}-distance">Daily Distance (km)</label>
                         <input type="number" id="vehicle-${i}-distance" min="0" step="0.1">
-                    </div>`;
+                        ${calcModeValue === "custom" ? 
+                            <label for="vehicle-${i}-days">Custom Days</label>
+                            <input type="number" id="vehicle-${i}-days" min="1" value="1">
+                         : ''}
+                    </div>;
             }
         }
 
         function calculateVehicleEmission() {
             const numVehicles = parseInt(document.getElementById('num-vehicles').value) || 1;
+            const calcModeValue = calcMode.value;
             const vehicleResults = document.getElementById('vehicle-results');
             const emissionMessage = document.getElementById('emission-message');
-            const changeOptions = document.getElementById('change-options');
             vehicleResults.innerHTML = '';
             emissionMessage.innerHTML = '';
-            changeOptions.style.display = 'none';
             let totalEmission = 0;
+            let multiplier;
+
             for (let i = 0; i < numVehicles; i++) {
-                const mode = document.getElementById(`vehicle-${i}-mode`).value;
-                const distance = parseFloat(document.getElementById(`vehicle-${i}-distance`).value) || 0;
-                const emission = distance * transportModes[mode] * 30; // Monthly assumption
+                const mode = document.getElementById(vehicle-${i}-mode).value;
+                const distance = parseFloat(document.getElementById(vehicle-${i}-distance).value) || 0;
+                multiplier = calcModeValue === "custom"
+                    ? parseInt(document.getElementById(vehicle-${i}-days).value) || 1
+                    : calcModeValue === "daily" ? 1
+                    : calcModeValue === "monthly" ? 30
+                    : 365;
+
+                const emission = distance * transportModes[mode] * multiplier;
                 totalEmission += emission;
-                vehicleResults.innerHTML += `<p><strong>Vehicle ${i + 1}:</strong> ${emission.toFixed(2)} kg CO₂</p>`;
+
+                vehicleResults.innerHTML += <p><strong>Vehicle ${i + 1} (${calcModeValue}):</strong> ${emission.toFixed(2)} kg CO₂</p>;
             }
-            vehicleResults.innerHTML += `<hr><p><strong>Total Vehicle Emission:</strong> ${totalEmission.toFixed(2)} kg CO₂</p>`;
-            if (totalEmission > 50) {
-                emissionMessage.innerHTML = "<p class='high-emission'>⚠️ Your emissions are quite high! Consider switching to eco-friendly transport options. ⚠️</p>";
-                changeOptions.style.display = 'block';
+
+            vehicleResults.innerHTML += <hr><p><strong>Total Vehicle Emission (${calcModeValue}):</strong> ${totalEmission.toFixed(2)} kg CO₂</p>;
+
+            if (totalEmission < 50) {
+                emissionMessage.innerHTML = "<p class='low-emission'>Great job! Your emissions are on the lower side.✅</p>";
+            } else {
+                emissionMessage.innerHTML = "<p class='high-emission'>⚠️Your emissions are quite high! Consider switching to eco-friendly transport options.⚠️</p>";
             }
         }
-
-function showChangeOptions() {
-    const emissionMessage = document.getElementById('emission-message');
-
-    // Create a div to hold the options
-    const optionsDiv = document.createElement('div');
-    optionsDiv.id = "change-options";
-
-    // Create the question
-    const question = document.createElement('p');
-    question.innerHTML = "<strong>How would you like to change?</strong>";
-    optionsDiv.appendChild(question);
-
-    // Define options
-    const options = ["Public Transport", "Carpooling", "Electric Vehicle", "Bicycling", "Walking"];
-
-    // Create radio buttons
-    options.forEach(option => {
-        const label = document.createElement('label');
-        const radio = document.createElement('input');
-        radio.type = "radio";
-        radio.name = "change-option";
-        radio.value = option;
-
-        label.appendChild(radio);
-        label.appendChild(document.createTextNode(" " + option));
-        optionsDiv.appendChild(label);
-        optionsDiv.appendChild(document.createElement("br"));
-    });
-
-    // Create submit button
-    const submitButton = document.createElement('button');
-    submitButton.id = "submit-change";
-    submitButton.style.display = "none"; // Initially hidden
-    submitButton.innerText = "Submit";
-    submitButton.onclick = submitChange;
-    optionsDiv.appendChild(submitButton);
-
-    // Append everything to the emission message div
-    emissionMessage.appendChild(optionsDiv);
-
-
-function submitChange() {
-    const selectedOption = document.querySelector('input[name="change-option"]:checked').value;
-
-    // Send the data to the database (submit_change.php)
-    fetch('submit_change.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `change_option=${encodeURIComponent(selectedOption)}`
-    })
-    .then(response => response.text())
-    .then(data => {
-        alert("Your choice has been submitted: " + selectedOption);
-    })
-    .catch(error => {
-        console.error("Error submitting choice:", error);
-    });
-}
-</script>
+    </script>
 </body>
 </html>
-
