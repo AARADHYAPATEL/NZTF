@@ -8,10 +8,8 @@
 body {
     text-align: center;
     font-family: 'Poppins', Arial, sans-serif;
-    background-image: url("images/61iFKwokk5L._AC_UY1000_.jpg");
     background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+    background: linear-gradient(135deg, #1e3c72, #2a5298) fixed center;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -25,35 +23,42 @@ body {
 /* Navigation Bar */
 nav {
     background: rgba(255, 255, 255, 0.1);
-    padding: 15px 0;
+    padding: 15px 30px;
     width: 100%;
-    position: fixed;
+    position: fixed; /* Keeps it on top */
     top: 0;
     left: 0;
-    text-align: center;
     z-index: 1000;
     backdrop-filter: blur(10px);
     box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
 }
 
-nav a {
-    color: #fff;
+.navbar {
+    display: flex;
+    justify-content: center; /* Aligns items in the center */
+    align-items: center;
+    gap: 30px; /* Adds space between links */
+}
+
+.navbar a {
     text-decoration: none;
-    margin: 0 20px;
-    font-size: 18px;
+    color: white;
     font-weight: bold;
+    font-size: 18px;
+    padding: 10px 15px;
     transition: color 0.3s ease-in-out;
 }
 
-nav a:hover {
+.navbar a:hover {
     color: #ffcc00;
     text-decoration: underline;
 }
 
+
 /* Main Container */
 .container {
     max-width: 700px;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.2);
     padding: 30px;
     margin-top: 80px;
     border-radius: 15px;
@@ -95,7 +100,7 @@ nav a:hover {
 
 /* Buttons */
 .button {
-    display: inline-block;
+    display: flex;
     padding: 12px 25px;
     font-size: 16px;
     font-weight: bold;
@@ -107,6 +112,8 @@ nav a:hover {
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
+    justify-content: center;
+    gap: 15px;
 }
 
 .button:hover {
@@ -141,6 +148,7 @@ nav a:hover {
 h1, h3 {
     color: #fff;
     margin-bottom: 15px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive Design */
