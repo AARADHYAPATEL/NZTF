@@ -136,6 +136,27 @@
             }
         }
 
+        function submitResponse() {
+            const response = document.getElementById('change-response').value;
+            if (response.trim() === "") {
+                alert("Please enter a response before submitting.");
+                return;
+            }
+
+            const data = { response: response };
+
+            fetch('responses.json', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(() => {
+                alert("Response submitted successfully!");
+                document.getElementById('change-response').value = "";
+            }).catch(error => console.error('Error:', error));
+        }
+
         function resetForm() {
             document.getElementById('appliance-form').reset();
             document.getElementById('appliance-details').innerHTML = '';
